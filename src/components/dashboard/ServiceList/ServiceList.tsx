@@ -50,7 +50,7 @@ const ServiceList = () => {
     return (
     <div className="w-full h-full bg-white rounded-lg shadow-md">
         <div className="flex flex-row justify-between m-6">
-            <h1 className="font-bold text-xl">Nossos Serviços</h1>
+            <h1 className="font-bold text-xl">Serviços</h1>
 
             {/* Depois colocar JS para procurar, filtrar, ordenar e paginar os serviços */}
             {/* Colocar botão de funcionalidade ou aqui, ou em outra div */}

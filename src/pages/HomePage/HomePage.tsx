@@ -4,6 +4,7 @@ const HomePage = () => {
     
     return (
     <div>
+        {/* Incluir uma barra de navegação */}
         <ServiceList />
     </div>
     );
