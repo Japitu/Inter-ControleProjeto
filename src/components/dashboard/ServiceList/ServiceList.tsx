@@ -11,7 +11,9 @@ const ServiceList = () => {
             projectNumber: "P2024_052",
             area: "Parque",
             status: "Aguardando",
-            hoursSpent: "0"
+            hoursSpent: "0",
+            responsibleUserId: 1,
+            responsibleUserName: "João Silva"
         },
         {
             id: 2,
