@@ -1,4 +1,4 @@
-import ServiceList from "../../components/dashboard/ServiceList/ServiceList";
+import ServiceList from "../../components/dashboard/ServiceList/TabelaServico";
 
 const HomePage = () => {
     

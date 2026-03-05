@@ -1,53 +1,30 @@
-import type { Service } from "../../../types";
+import { useEffect, useState } from "react";
+import type { ServiceProps } from "../../../types";
+import { getServices } from "../../../services/servicoAPI";
+import CreateServiceModal from "../../modals/CreateServiceModal/CreateServiceModal";
 
 const ServiceList = () => {   
 
-    const services: Service[] = [
-        {
-            id: 1,
-            name: "Rel Causa Raiz",
-            projectId: 101,
-            projectName: "Casa Blanca",
-            projectNumber: "P2024_052",
-            area: "Parque",
-            status: "Aguardando",
-            hoursSpent: "0",
-            responsibleUserId: 1,
-            responsibleUserName: "João Silva"
-        },
-        {
-            id: 2,
-            name: "DR Retroativo",
-            projectId: 102,
-            projectName: "Luiz Carlos",
-            projectNumber: "25_165_25",
-            area: "Parque",
-            status: "Aguardando",
-            hoursSpent: "0"
-        },
-        {
-            id: 3,
-            name: "TAF unid 1286090",
-            projectId: 103,
-            projectName: "Jacarandá",
-            projectNumber: "25_160_25",
-            area: "Parque",
-            status: "Ativo",
-            hoursSpent: "1"
-        },
-        {
-            id: 4,
-            name: "Análise de Frota",
-            projectId: 104,
-            projectName: "Guimarania",
-            projectNumber: "25_172_27",
-            area: "Parque",
-            status: "Concluído",
-            hoursSpent: "1,5"
-        }
-    ];
+    const [showCreateServiceModal, setShowCreateServiceModal] = useState(false);
 
-    const loading = false; // Simulando estado de carregamento
+    const [services, setServices] = useState<ServiceProps[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchServices() {
+            try {
+                const data = await getServices();
+                setServices(data);
+            } catch (error) {
+                console.error("Erro ao buscar serviços:", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchServices()
+    }, []);
+    
 
     return (
     <div className="w-full h-full bg-white rounded-lg shadow-md">
@@ -57,7 +34,9 @@ const ServiceList = () => {
             {/* Depois colocar JS para procurar, filtrar, ordenar e paginar os serviços */}
             {/* Colocar botão de funcionalidade ou aqui, ou em outra div */}
 
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm cursor-pointer">+ Add Serviços</button>
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm cursor-pointer" onClick={() => setShowCreateServiceModal(true)}>
+                + Add Serviços
+            </button>
         </div>
         <div>
 
@@ -75,20 +54,23 @@ const ServiceList = () => {
                 
                 <tbody>
 
-                {/* {Colocar aqui o map para listar os serviços recebidos da API} */}
-                    { loading ? <span>Carregando...</span> 
-                    :
-                    services.map((service) => (
+                    { loading ? (
+                        <tr>
+                            <td colSpan={6} className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-center">
+                                Carregando...
+                            </td>
+                        </tr>
+                     ) : (
+                    services.map((service: ServiceProps) => (
                         <tr key={service.id} className="hover:bg-blue-50 transition-colors">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{service.projectNumber} - {service.projectName}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{service.name}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{service.status}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{service.hoursSpent}h</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{service.numero} - {service.projeto.nome}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{service.nome}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{service.statusServico}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{service.horasTotal ? `${service.horasTotal}h` : '0h'}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{service.area}</td>
-
                             <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
 
-                                {/* Adicionar Horas */}
+                                {/* Adicionar Atividade */}
                                 <button className="text-gray-600 hover:text-blue-700 transition-colors mr-4 cursor-pointer" /*onClick={() => handleAddHoursClick(service)}>*/>
                                 Adicionar Horas
                                 </button>
@@ -104,11 +86,16 @@ const ServiceList = () => {
                                 </button>
                             </td>
                         </tr>
-                    ))}
+                    )))}
                     
                 </tbody>
             </table>
         </div>
+        {showCreateServiceModal && (
+            <CreateServiceModal onClose={() => setShowCreateServiceModal(false)} />
+            )
+        }
+
     </div>
     );
 }
