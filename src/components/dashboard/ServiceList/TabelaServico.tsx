@@ -25,7 +25,6 @@ const ServiceList = () => {
         fetchServices()
     }, []);
     
-
     return (
     <div className="w-full h-full bg-white rounded-lg shadow-md">
         <div className="flex flex-row justify-between m-6">
