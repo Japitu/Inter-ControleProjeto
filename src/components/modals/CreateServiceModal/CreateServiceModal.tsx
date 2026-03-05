@@ -1,10 +1,13 @@
 import { useState } from "react";
+import type { ProjectProps, UserProps } from "../../../types";
 
 type Props = {
+    usuarios: UserProps[];
+    projetos: ProjectProps[];
     onClose: () => void;
 };
 
-const CreateServiceModal = ({ onClose }: Props) => {
+const CreateServiceModal = ({ usuarios, projetos, onClose }: Props) => {
 
     const [name, setName] = useState("");
     const [area, setArea] = useState("PARQUE");
@@ -61,6 +64,30 @@ const CreateServiceModal = ({ onClose }: Props) => {
                         <option value="AGUARDANDO">Aguardando</option>
                         <option value="ATIVO">Ativo</option>
                         <option value="CONCLUIDO">Concluído</option>
+                    </select>
+
+                    <select
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value)}
+                        className="border rounded p-2"
+                    >
+                        {usuarios.map((usuario) => (
+                            <option key={usuario.id} value={usuario.id}>
+                                {usuario.nome}
+                            </option>
+                        ))}
+                    </select>
+
+                    <select
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value)}
+                        className="border rounded p-2"
+                    >
+                        {projetos.map((projeto) => (
+                            <option key={projeto.id} value={projeto.id}>
+                                {projeto.nome}
+                            </option>
+                        ))}
                     </select>
 
                     <div className="flex justify-end gap-2 mt-3">

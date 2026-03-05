@@ -1,6 +1,8 @@
 import { ENDPOINTS } from "../config/api";
 import type { CreateServiceDTOProps, ServiceProps } from "../types";
 
+// Função para buscar TODOS serviços
+
 export async function getServices(): Promise<ServiceProps[]> {
     const response = await fetch(ENDPOINTS.SERVICES);
 
@@ -10,6 +12,8 @@ export async function getServices(): Promise<ServiceProps[]> {
 
     return response.json();
 }
+
+// Função para criar um novo serviço
 
 export async function createService(service: CreateServiceDTOProps): Promise<ServiceProps> {
     const response = await fetch(ENDPOINTS.SERVICES, {

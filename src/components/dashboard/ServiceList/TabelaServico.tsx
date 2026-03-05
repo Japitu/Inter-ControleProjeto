@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
-import type { ServiceProps } from "../../../types";
+import type { ServiceProps, UserProps } from "../../../types";
 import { getServices } from "../../../services/servicoAPI";
+import { getUsers } from "../../../services/userAPI";
+import { getProjects } from "../../../services/projectsAPI";
 import CreateServiceModal from "../../modals/CreateServiceModal/CreateServiceModal";
+
 
 const ServiceList = () => {   
 
@@ -10,6 +13,12 @@ const ServiceList = () => {
     const [services, setServices] = useState<ServiceProps[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const [users, setUsers] = useState<UserProps[]>([]);
+    const [projects, setProjects] = useState([]);
+
+    // UseEffect para as buscas
+
+    // UseEffect dos serviços ao montar o componente
     useEffect(() => {
         async function fetchServices() {
             try {
@@ -24,7 +33,37 @@ const ServiceList = () => {
 
         fetchServices()
     }, []);
-    
+
+    // UseEffect dos usuários ao montar o componente
+
+    useEffect(() => {
+    async function fetchUsers() {
+        try {
+            const data = await getUsers();
+            setUsers(data);
+        } catch (error) {
+            console.error("Erro ao buscar usuários:", error);
+        }
+    }
+
+    fetchUsers();
+}, []);
+
+    // UseEffect para buscar os projetos ao montar o componente
+
+    useEffect(() => {
+        async function fetchProjects() {
+            try {
+                const data = await getProjects();
+                setProjects(data);
+            } catch (error) {
+                console.error("Erro ao buscar projetos:", error);
+            }
+        }
+
+        fetchProjects();
+    }, []);
+
     return (
     <div className="w-full h-full bg-white rounded-lg shadow-md">
         <div className="flex flex-row justify-between m-6">
@@ -91,7 +130,7 @@ const ServiceList = () => {
             </table>
         </div>
         {showCreateServiceModal && (
-            <CreateServiceModal onClose={() => setShowCreateServiceModal(false)} />
+            <CreateServiceModal usuarios={users} projetos={projects} onClose={() => setShowCreateServiceModal(false)} />
             )
         }
 

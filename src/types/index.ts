@@ -9,7 +9,7 @@ export type Status =
 "Concluído" | 
 "Cancelado";
 
-interface UserProps {
+export interface UserProps {
     id: number;
     nome: string;
 }
