@@ -23,6 +23,20 @@ export async function createService(service: CreateServiceDTOProps): Promise<Ser
         },
         body: JSON.stringify(service)
     });
+    if (!response.ok) {
+        throw new Error("Erro ao criar serviço");
+    }
 
     return response.json();
+}
+
+// Função para deletar um serviço
+
+export async function deleteService(id: number): Promise<void> {
+    const response = await fetch(`${ENDPOINTS.SERVICES}/${id}`, {
+        method: "DELETE"
+    });
+    if (!response.ok) {
+        throw new Error("Erro ao deletar serviço");
+    }
 }

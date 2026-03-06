@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
 import type { ServiceProps, UserProps } from "../../../types";
-import { getServices } from "../../../services/servicoAPI";
+import { getServices, deleteService } from "../../../services/servicoAPI";
 import { getUsers } from "../../../services/userAPI";
 import { getProjects } from "../../../services/projectsAPI";
 import CreateServiceModal from "../../modals/CreateServiceModal/CreateServiceModal";
+import DeleteServiceModal from "../../modals/DeleteConfirmModal/DeleteServiceModal";
 
 
-const ServiceList = () => {   
+const ServiceList = () => {
+
+    const capitalizeFirstLetter = (str: string) => {
+        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    }
 
     const [showCreateServiceModal, setShowCreateServiceModal] = useState(false);
 
@@ -15,6 +20,12 @@ const ServiceList = () => {
 
     const [users, setUsers] = useState<UserProps[]>([]);
     const [projects, setProjects] = useState([]);
+
+    const [deleteId, setDeleteId] = useState<number | null>(null);
+
+    const handleServiceCreated = (newService: ServiceProps) => {
+        setServices(prevServices => [...prevServices, newService]);
+    }
 
     // UseEffect para as buscas
 
@@ -64,6 +75,20 @@ const ServiceList = () => {
         fetchProjects();
     }, []);
 
+
+    const confirmDelete = async () => {
+
+    if (deleteId === null) return;
+
+    await deleteService(deleteId);
+
+    setServices(prev =>
+        prev.filter(service => service.id !== deleteId)
+    );
+
+    setDeleteId(null);
+    };
+
     return (
     <div className="w-full h-full bg-white rounded-lg shadow-md">
         <div className="flex flex-row justify-between m-6">
@@ -103,9 +128,9 @@ const ServiceList = () => {
                         <tr key={service.id} className="hover:bg-blue-50 transition-colors">
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{service.numero} - {service.projeto.nome}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{service.nome}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{service.statusServico}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{capitalizeFirstLetter(service.statusServico)}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{service.horasTotal ? `${service.horasTotal}h` : '0h'}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{service.area}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">({capitalizeFirstLetter(service.area)})</td>
                             <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
 
                                 {/* Adicionar Atividade */}
@@ -119,7 +144,7 @@ const ServiceList = () => {
                                 </button>
 
                                 {/* Remover */}
-                                <button className="text-red-500 hover:text-red-700 transition-colors font-medium cursor-pointer" /*onClick={() => handleRemoveClick(service)}*/>
+                                <button className="text-red-500 hover:text-red-700 transition-colors font-medium cursor-pointer" onClick={() => setDeleteId(service.id)}>
                                 Remover
                                 </button>
                             </td>
@@ -130,9 +155,20 @@ const ServiceList = () => {
             </table>
         </div>
         {showCreateServiceModal && (
-            <CreateServiceModal usuarios={users} projetos={projects} onClose={() => setShowCreateServiceModal(false)} />
+            <CreateServiceModal 
+            usuarios={users} 
+            projetos={projects} 
+            onClose={() => setShowCreateServiceModal(false)} 
+            onCreated={handleServiceCreated}
+            />
             )
         }
+        <DeleteServiceModal 
+        isOpen={deleteId !== null} 
+        onConfirm={confirmDelete} 
+        onCancel={() => {
+            setDeleteId(null);
+        }} />
 
     </div>
     );

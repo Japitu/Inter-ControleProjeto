@@ -38,7 +38,6 @@ export interface ServiceProps {
 }
 
 export interface CreateServiceDTOProps {
-    id: number;
     nome: string;
     numero: string;
     area: Area;

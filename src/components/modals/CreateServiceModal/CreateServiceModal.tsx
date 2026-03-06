@@ -1,36 +1,71 @@
 import { useState } from "react";
 import type { ProjectProps, UserProps } from "../../../types";
+import { createService } from "../../../services/servicoAPI";
+import type { Area, Status, ServiceProps } from "../../../types";
 
 type Props = {
     usuarios: UserProps[];
     projetos: ProjectProps[];
     onClose: () => void;
+    onCreated: (newService: ServiceProps) => void;
 };
 
-const CreateServiceModal = ({ usuarios, projetos, onClose }: Props) => {
 
-    const [name, setName] = useState("");
-    const [area, setArea] = useState("PARQUE");
-    const [status, setStatus] = useState("AGUARDANDO");
+const CreateServiceModal = ({ usuarios, projetos, onClose, onCreated }: Props) => {
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const [loading, setLoading] = useState(false);
+
+    const [form, setForm] = useState({
+        nome: "",
+        numero: "",
+        area: "",
+        statusServico: "",
+        projeto: "",
+        usuario: ""
+    });
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const newService = {
-            nome: name,
-            area,
-            statusServico: status
-        };
+        try {
+            setLoading(true);
 
-        console.log(newService);
+            const newService = {
+                nome: form.nome,
+                numero: form.numero,
+                area: form.area as Area,
+                statusServico: form.statusServico as Status,
+                projeto: { id: Number(form.projeto) },
+                usuario: { id: Number(form.usuario) }
+            };
+            
+            const createdService = await createService(newService);
 
-        onClose();
+            console.log(createdService);
+
+            onCreated(createdService);
+            onClose();
+        } catch (error) {
+        console.error("Erro ao criar serviço:", error);
+        } finally {
+        setLoading(false);
+        }
+    }
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        setForm({ ...form, [e.target.id]: e.target.value });
     };
+    
 
     return (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center"
+        onClick={onClose}
+        >
 
-            <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+            <div 
+                className="bg-white rounded-lg shadow-lg p-6 w-96"
+                onClick={(e) => e.stopPropagation()}
+            >
 
                 <h2 className="text-lg font-bold mb-4">
                     Novo Serviço
@@ -38,39 +73,79 @@ const CreateServiceModal = ({ usuarios, projetos, onClose }: Props) => {
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-3">
 
+                    <label htmlFor="nome" className="text-sm font-medium">
+                        Nome do Serviço
+                    </label>
                     <input
                         type="text"
+                        id="nome"
                         placeholder="Nome do serviço"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        value={form.nome}
+                        onChange={handleChange}
                         className="border rounded p-2"
                     />
 
-                    <select
-                        value={area}
-                        onChange={(e) => setArea(e.target.value)}
+                    <label htmlFor="numero" className="text-sm font-medium">
+                        Número do Serviço
+                    </label>
+                    <input
+                        id="numero"
+                        type="text"
+                        placeholder="Número do serviço"
+                        value={form.numero}
+                        onChange={handleChange}
                         className="border rounded p-2"
+                    />
+
+                    <label htmlFor="area" className="text-sm font-medium">
+                        Área
+                    </label>
+                    <select
+                        id="area"
+                        value={form.area}
+                        onChange={handleChange}
+                        className="border rounded p-2"
+                        required
                     >
+                        <option value="" disabled hidden>
+                            Selecione a área
+                        </option>
                         <option value="PARQUE">Parque</option>
                         <option value="CAMPO">Campo</option>
                         <option value="ENGENHARIA">Engenharia</option>
                     </select>
 
+                    <label htmlFor="statusServico" className="text-sm font-medium">
+                        Status do Serviço
+                    </label>
                     <select
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
+                        id="statusServico"
+                        value={form.statusServico}
+                        onChange={handleChange}
                         className="border rounded p-2"
+                        required
                     >
+                        <option value="" disabled hidden>
+                            Selecione o status
+                        </option>
                         <option value="AGUARDANDO">Aguardando</option>
                         <option value="ATIVO">Ativo</option>
                         <option value="CONCLUIDO">Concluído</option>
                     </select>
 
+                    <label htmlFor="usuario" className="text-sm font-medium">
+                        Responsável
+                    </label>
                     <select
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
+                        id="usuario"
+                        value={form.usuario}
+                        onChange={handleChange}
                         className="border rounded p-2"
+                        required
                     >
+                        <option value="" disabled hidden>
+                            Selecione o Responsável
+                        </option>
                         {usuarios.map((usuario) => (
                             <option key={usuario.id} value={usuario.id}>
                                 {usuario.nome}
@@ -78,11 +153,19 @@ const CreateServiceModal = ({ usuarios, projetos, onClose }: Props) => {
                         ))}
                     </select>
 
+                    <label htmlFor="projeto" className="text-sm font-medium">
+                        Projeto
+                    </label>
                     <select
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
+                        id="projeto"
+                        value={form.projeto}
+                        onChange={handleChange}
                         className="border rounded p-2"
+                        required
                     >
+                        <option value="" disabled hidden>
+                            Selecione o Projeto
+                        </option>
                         {projetos.map((projeto) => (
                             <option key={projeto.id} value={projeto.id}>
                                 {projeto.nome}
@@ -93,18 +176,19 @@ const CreateServiceModal = ({ usuarios, projetos, onClose }: Props) => {
                     <div className="flex justify-end gap-2 mt-3">
 
                         <button
-                            type="button"
-                            onClick={onClose}
-                            className="px-3 py-1 bg-gray-200 rounded"
+                            type="submit"
+                            disabled={loading}
+                            className="px-3 py-1 bg-blue-600 text-white rounded cursor-pointer"
                         >
-                            Cancelar
+                            {loading ? "Criando..." : "Criar"}
                         </button>
 
                         <button
-                            type="submit"
-                            className="px-3 py-1 bg-blue-600 text-white rounded"
+                            type="button"
+                            onClick={onClose}
+                            className="px-3 py-1 bg-gray-200 rounded cursor-pointer"
                         >
-                            Criar
+                            Cancelar
                         </button>
 
                     </div>
