@@ -1,5 +1,5 @@
 import { ENDPOINTS } from "../config/api";
-import type { CreateServiceDTOProps, ServiceProps } from "../types";
+import type { CreateServiceDTOProps, EditServiceDTOProps, ServiceProps } from "../types";
 
 // Função para buscar TODOS serviços
 
@@ -39,4 +39,20 @@ export async function deleteService(id: number): Promise<void> {
     if (!response.ok) {
         throw new Error("Erro ao deletar serviço");
     }
+}
+
+// Função para atualizar um serviço
+
+export async function updateService(id: number, service: EditServiceDTOProps): Promise<ServiceProps> {
+    const response = await fetch(`${ENDPOINTS.SERVICES}/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(service)
+    });
+    if (!response.ok) {
+        throw new Error("Erro ao atualizar serviço");
+    }
+    return response.json();
 }

@@ -46,6 +46,16 @@ export interface CreateServiceDTOProps {
     usuario: { id: number };
 }
 
+export interface EditServiceDTOProps {
+    id: number;
+    nome: string;
+    numero: string;
+    area: Area;
+    statusServico: Status;
+    projeto: { id: number };
+    usuario: { id: number };
+}
+
 export interface ActivityProps {
     id: number;
     nome: string;

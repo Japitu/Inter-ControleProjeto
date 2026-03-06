@@ -3,8 +3,9 @@ import type { ServiceProps, UserProps } from "../../../types";
 import { getServices, deleteService } from "../../../services/servicoAPI";
 import { getUsers } from "../../../services/userAPI";
 import { getProjects } from "../../../services/projectsAPI";
-import CreateServiceModal from "../../modals/CreateServiceModal/CreateServiceModal";
-import DeleteServiceModal from "../../modals/DeleteConfirmModal/DeleteServiceModal";
+import CreateServiceModal from "../../modals/CreateServiceModal";
+import DeleteServiceModal from "../../modals/DeleteServiceModal";
+import EditServiceModal from "../../modals/EditServiceModal";
 
 
 const ServiceList = () => {
@@ -22,6 +23,7 @@ const ServiceList = () => {
     const [projects, setProjects] = useState([]);
 
     const [deleteId, setDeleteId] = useState<number | null>(null);
+    const [editingService, setEditingService] = useState<ServiceProps | null>(null);
 
     const handleServiceCreated = (newService: ServiceProps) => {
         setServices(prevServices => [...prevServices, newService]);
@@ -80,6 +82,8 @@ const ServiceList = () => {
 
     if (deleteId === null) return;
 
+        console.log(deleteId); // Log para verificar o ID
+
     await deleteService(deleteId);
 
     setServices(prev =>
@@ -88,6 +92,13 @@ const ServiceList = () => {
 
     setDeleteId(null);
     };
+
+    const handleServiceUpdated = (updatedService: ServiceProps) => {
+        setServices(prev =>
+            prev.map(service => service.id === updatedService.id ? updatedService : service)
+        );
+        setEditingService(null);
+    }
 
     return (
     <div className="w-full h-full bg-white rounded-lg shadow-md">
@@ -130,7 +141,7 @@ const ServiceList = () => {
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{service.nome}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{capitalizeFirstLetter(service.statusServico)}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{service.horasTotal ? `${service.horasTotal}h` : '0h'}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">({capitalizeFirstLetter(service.area)})</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{capitalizeFirstLetter(service.area)}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
 
                                 {/* Adicionar Atividade */}
@@ -139,7 +150,7 @@ const ServiceList = () => {
                                 </button>
 
                                 {/* Editar */}
-                                <button className="text-gray-400 hover:text-blue-700 transition-colors mr-4 cursor-pointer" /*onClick={() => handleEditClick(service)}>*/>
+                                <button className="text-gray-400 hover:text-blue-700 transition-colors mr-4 cursor-pointer" onClick={() => setEditingService(service)}>
                                 Editar
                                 </button>
 
@@ -169,6 +180,15 @@ const ServiceList = () => {
         onCancel={() => {
             setDeleteId(null);
         }} />
+        {editingService && (
+            <EditServiceModal 
+            service={editingService}
+            usuarios={users}
+            projetos={projects}
+            onClose={() => setEditingService(null)}
+            onServiceUpdated={handleServiceUpdated}
+            />
+        )}
 
     </div>
     );

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import type { ProjectProps, UserProps } from "../../../types";
-import { createService } from "../../../services/servicoAPI";
-import type { Area, Status, ServiceProps } from "../../../types";
+import type { ProjectProps, UserProps } from "../../types";
+import { createService } from "../../services/servicoAPI";
+import type { Area, Status, ServiceProps } from "../../types";
 
 type Props = {
     usuarios: UserProps[];
@@ -45,6 +45,7 @@ const CreateServiceModal = ({ usuarios, projetos, onClose, onCreated }: Props) =
 
             onCreated(createdService);
             onClose();
+
         } catch (error) {
         console.error("Erro ao criar serviço:", error);
         } finally {
@@ -61,7 +62,6 @@ const CreateServiceModal = ({ usuarios, projetos, onClose, onCreated }: Props) =
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center"
         onClick={onClose}
         >
-
             <div 
                 className="bg-white rounded-lg shadow-lg p-6 w-96"
                 onClick={(e) => e.stopPropagation()}
@@ -190,13 +190,9 @@ const CreateServiceModal = ({ usuarios, projetos, onClose, onCreated }: Props) =
                         >
                             Cancelar
                         </button>
-
                     </div>
-
                 </form>
-
             </div>
-
         </div>
     );
 };

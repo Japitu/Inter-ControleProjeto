@@ -1,14 +1,10 @@
-interface DeleteServiceModalProps {
-  isOpen: boolean;
-  onConfirm: () => void;
-  onCancel: () => void;
+type Props = {
+    isOpen: boolean;
+    onConfirm: () => void;
+    onCancel: () => void;
 }
 
-export default function DeleteServiceModal({
-  isOpen,
-  onConfirm,
-  onCancel
-}: DeleteServiceModalProps) {
+const DeleteServiceModal = ({ isOpen, onConfirm, onCancel }: Props) => {
 
   if (!isOpen) return null;
 
@@ -46,3 +42,5 @@ export default function DeleteServiceModal({
     </div>
   );
 }
+
+export default DeleteServiceModal;
